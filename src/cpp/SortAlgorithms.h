@@ -77,7 +77,6 @@ static void sortByVehicleType(
         vehicles[j + 1] = current;
     }
 }
-
 };
 
 #endif
