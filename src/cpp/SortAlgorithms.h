@@ -57,19 +57,27 @@ public:
         }
     }
 
-    // Sort vehicles by type using a comparator
-    template <typename VehicleType>
-    static void sortByVehicleType(
-        std::vector<VehicleType>& vehicles
-    ) {
-        std::sort(
-            vehicles.begin(),
-            vehicles.end(),
-            [](const VehicleType& first, const VehicleType& second) {
-    return first->getType() < second->getType();
-}
-        );
+    // Sort vehicles by type using Insertion Sort and a comparator
+template <typename VehicleType>
+static void sortByVehicleType(
+    std::vector<VehicleType>& vehicles
+) {
+    for (int i = 1; i < vehicles.size(); i++) {
+
+        VehicleType current = vehicles[i];
+        int j = i - 1;
+
+        while (j >= 0 &&
+               current->getType() < vehicles[j]->getType()) {
+
+            vehicles[j + 1] = vehicles[j];
+            j--;
+        }
+
+        vehicles[j + 1] = current;
     }
+}
+
 };
 
 #endif
