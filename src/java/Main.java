@@ -1,12 +1,25 @@
 public class Main {
     public static void main(String[] args) {
 
-        System.out.println("VEHICLE PARKING MANAGEMENT SYSTEM");
-        System.out.println("---------------------------------");
-        System.out.println("Welcome to the parking management system!");
-        System.out.println("Available vehicle types:");
-        System.out.println("1. Motorcycle");
-        System.out.println("2. Car");
-        System.out.println("3. Bus");
+        Vehicle.Motorcycle motorcycle =
+            new Vehicle.Motorcycle("ABC123");
+
+        Vehicle.Car car =
+            new Vehicle.Car("DEF456");
+
+        Vehicle.Bus bus =
+            new Vehicle.Bus("GHI789");
+
+        System.out.println("VEHICLE REGISTRATION TEST");
+        System.out.println("-------------------------");
+
+        System.out.println(motorcycle.getType() + " - "
+            + motorcycle.getRegistrationNumber());
+
+        System.out.println(car.getType() + " - "
+            + car.getRegistrationNumber());
+
+        System.out.println(bus.getType() + " - "
+            + bus.getRegistrationNumber());
     }
 }
