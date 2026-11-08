@@ -1,25 +1,18 @@
-#include <iostream>
-#include "Vehicle.h"
-
-using namespace std;
+#include "ParkingSystem.h"
 
 int main() {
+    ParkingSystem parking;
 
-    Vehicle::Motorcycle motorcycle("ABC123");
-    Vehicle::Car car("DEF456");
-    Vehicle::Bus bus("GHI789");
+    cout << "VEHICLE PARKING MANAGEMENT SYSTEM" << endl;
+    cout << "---------------------------------" << endl;
 
-    cout << "VEHICLE REGISTRATION TEST" << endl;
-    cout << "-------------------------" << endl;
+    parking.occupySpace(1, 1, 1, "ABC123");
+    parking.occupySpace(1, 1, 2, "DEF456");
+    parking.occupySpace(1, 1, 1, "GHI789");
 
-    cout << motorcycle.getType() << " - "
-         << motorcycle.getRegistrationNumber() << endl;
+    cout << endl << "PARKING STATUS" << endl;
 
-    cout << car.getType() << " - "
-         << car.getRegistrationNumber() << endl;
-
-    cout << bus.getType() << " - "
-         << bus.getRegistrationNumber() << endl;
+    parking.displayParking();
 
     return 0;
 }
