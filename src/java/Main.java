@@ -1,6 +1,8 @@
 public class Main {
     public static void main(String[] args) {
 
+        ParkingSystem parking = new ParkingSystem();
+
         Vehicle.Motorcycle motorcycle =
             new Vehicle.Motorcycle("ABC123");
 
@@ -10,16 +12,16 @@ public class Main {
         Vehicle.Bus bus =
             new Vehicle.Bus("GHI789");
 
-        System.out.println("VEHICLE REGISTRATION TEST");
-        System.out.println("-------------------------");
+        System.out.println("VEHICLE PARKING MANAGEMENT SYSTEM");
+        System.out.println("---------------------------------");
 
-        System.out.println(motorcycle.getType() + " - "
-            + motorcycle.getRegistrationNumber());
+        parking.parkVehicle(motorcycle);
+        parking.parkVehicle(car);
+        parking.parkVehicle(bus);
 
-        System.out.println(car.getType() + " - "
-            + car.getRegistrationNumber());
+        System.out.println();
+        System.out.println("PARKING STATUS");
 
-        System.out.println(bus.getType() + " - "
-            + bus.getRegistrationNumber());
+        parking.displayParking();
     }
 }
