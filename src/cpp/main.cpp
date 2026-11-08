@@ -3,12 +3,16 @@
 int main() {
     ParkingSystem parking;
 
+    Vehicle::Motorcycle motorcycle("ABC123");
+    Vehicle::Car car("DEF456");
+    Vehicle::Bus bus("GHI789");
+
     cout << "VEHICLE PARKING MANAGEMENT SYSTEM" << endl;
     cout << "---------------------------------" << endl;
 
-    parking.occupySpace(1, 1, 1, "ABC123");
-    parking.occupySpace(1, 1, 2, "DEF456");
-    parking.occupySpace(1, 1, 1, "GHI789");
+    parking.parkVehicle(motorcycle);
+    parking.parkVehicle(car);
+    parking.parkVehicle(bus);
 
     cout << endl << "PARKING STATUS" << endl;
 
@@ -16,3 +20,4 @@ int main() {
 
     return 0;
 }
+

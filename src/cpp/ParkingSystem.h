@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "Vehicle.h"
 
 using namespace std;
 
@@ -61,6 +62,73 @@ public:
 class ParkingSystem {
 public:
     vector<ParkingFloor> floors;
+
+    void parkVehicle(const Vehicle& vehicle) {
+
+    // Bus needs five consecutive large spaces
+    if (vehicle.getType() == "Bus") {
+
+        for (auto& floor : floors) {
+            for (auto& row : floor.rows) {
+
+                int availableSpaces = 0;
+
+                for (auto& space : row.spaces) {
+
+                    if (space.type == SpaceType::Large && !space.occupied) {
+                        availableSpaces++;
+                    } else {
+                        availableSpaces = 0;
+                    }
+
+                    if (availableSpaces == 5) {
+
+                        int start = space.spaceNumber - 4;
+
+                        for (int i = start - 1; i < start + 4; i++) {
+                            row.spaces[i].occupied = true;
+                            row.spaces[i].registrationNumber =
+                                vehicle.getRegistrationNumber();
+                        }
+
+                        cout << "Bus parked successfully in five consecutive large spaces!" << endl;
+                        return;
+                    }
+                }
+            }
+        }
+
+        cout << "No five consecutive large spaces available for the bus!" << endl;
+        return;
+    }
+
+    // Motorcycle and Car
+    for (auto& floor : floors) {
+        for (auto& row : floor.rows) {
+            for (auto& space : row.spaces) {
+
+                bool compatible =
+                    vehicle.getType() == "Motorcycle" ||
+                    vehicle.getType() == "Car";
+
+                if (compatible && !space.occupied) {
+
+                    space.occupied = true;
+                    space.registrationNumber =
+                        vehicle.getRegistrationNumber();
+
+                    cout << vehicle.getType()
+                         << " parked successfully in space "
+                         << space.spaceNumber << endl;
+
+                    return;
+                }
+            }
+        }
+    }
+
+    cout << "No compatible parking space available!" << endl;
+}
 
     ParkingSystem() {
         floors.emplace_back(1);
