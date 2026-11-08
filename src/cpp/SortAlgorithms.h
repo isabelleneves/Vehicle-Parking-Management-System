@@ -14,6 +14,7 @@ public:
     static void bubbleSort(std::vector<std::string>& vehicles) {
 
         for (int i = 0; i < vehicles.size(); i++) {
+
             for (int j = 0; j < vehicles.size() - i - 1; j++) {
 
                 if (vehicles[j] > vehicles[j + 1]) {
@@ -31,6 +32,7 @@ public:
             int minimum = i;
 
             for (int j = i + 1; j < vehicles.size(); j++) {
+
                 if (vehicles[j] < vehicles[minimum]) {
                     minimum = j;
                 }
@@ -58,25 +60,25 @@ public:
     }
 
     // Sort vehicles by type using Insertion Sort and a comparator
-template <typename VehicleType>
-static void sortByVehicleType(
-    std::vector<VehicleType>& vehicles
-) {
-    for (int i = 1; i < vehicles.size(); i++) {
+    template <typename VehicleType, typename Comparator>
+    static void sortByVehicleType(
+        std::vector<VehicleType>& vehicles,
+        Comparator compare
+    ) {
 
-        VehicleType current = vehicles[i];
-        int j = i - 1;
+        for (int i = 1; i < vehicles.size(); i++) {
 
-        while (j >= 0 &&
-               current->getType() < vehicles[j]->getType()) {
+            VehicleType current = vehicles[i];
+            int j = i - 1;
 
-            vehicles[j + 1] = vehicles[j];
-            j--;
+            while (j >= 0 && compare(current, vehicles[j])) {
+                vehicles[j + 1] = vehicles[j];
+                j--;
+            }
+
+            vehicles[j + 1] = current;
         }
-
-        vehicles[j + 1] = current;
     }
-}
 };
 
 #endif

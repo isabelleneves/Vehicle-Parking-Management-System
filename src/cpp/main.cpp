@@ -1,6 +1,7 @@
 #include "ParkingSystem.h"
 
 int main() {
+
     ParkingSystem parking;
 
     // Occupy all compact spaces in the first row
@@ -16,6 +17,18 @@ int main() {
 
     cout << endl << "PARKING STATUS" << endl;
     parking.displayParking();
+
+    cout << endl << "VEHICLE RECORDS" << endl;
+    parking.displayVehicleRecords();
+
+    cout << endl << "SORTED VEHICLES" << endl;
+    parking.displayVehiclesSortedByType();
+
+    cout << endl << "SEARCH VEHICLE" << endl;
+    parking.searchVehicle("DEF456");
+
+    cout << endl << "SEARCH USING THREE ALGORITHMS" << endl;
+    parking.searchVehicleWithAlgorithms("DEF456");
 
     return 0;
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 class HashTable {
 
@@ -37,6 +38,31 @@ public:
                   << registration << std::endl;
 
         return false;
+    }
+
+    bool getVehicleType(std::string registration, std::string& vehicleType) {
+
+        auto vehicle = vehicles.find(registration);
+
+        if (vehicle != vehicles.end()) {
+
+            vehicleType = vehicle->second;
+            return true;
+        }
+
+        return false;
+    }
+
+    std::vector<std::pair<std::string, std::string>> getAllVehicles() {
+
+        std::vector<std::pair<std::string, std::string>> result;
+
+        for (const auto& vehicle : vehicles) {
+
+            result.push_back(vehicle);
+        }
+
+        return result;
     }
 
     void display() {
