@@ -1,9 +1,11 @@
-#ifndef PARKING_SYSTEM_H
-#define PARKING_SYSTEM_H
+#ifndef PARKINGSYSTEM_H
+#define PARKINGSYSTEM_H
 
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
+#include <algorithm>
+#include <utility>
 
 #include "Vehicle.h"
 #include "DoublyLinkedList.h"
@@ -14,11 +16,13 @@
 
 using namespace std;
 
+// Parking space types
 enum class SpaceType {
     Compact,
     Large
 };
 
+// Parking space
 class ParkingSpace {
 public:
     int spaceNumber;
@@ -34,6 +38,7 @@ public:
     }
 };
 
+// Parking row
 class ParkingRow {
 public:
     int rowNumber;
@@ -52,6 +57,7 @@ public:
     }
 };
 
+// Parking floor
 class ParkingFloor {
 public:
     int floorNumber;
@@ -65,10 +71,9 @@ public:
     }
 };
 
+// Main parking system
 class ParkingSystem {
-
 public:
-
     vector<ParkingFloor> floors;
 
     DoublyLinkedList vehicleList;
@@ -80,13 +85,13 @@ public:
         floors.emplace_back(2);
     }
 
-    // Register a successfully parked vehicle
+    // Register vehicle in all data structures
     void registerVehicle(const Vehicle& vehicle) {
-
         string registration = vehicle.getRegistrationNumber();
         string type = vehicle.getType();
+        string existingType;
 
-        if (vehicleHash.getVehicleType(registration, type)) {
+        if (vehicleHash.getVehicleType(registration, existingType)) {
             cout << "Vehicle is already registered!" << endl;
             return;
         }
@@ -98,11 +103,15 @@ public:
         cout << "Vehicle registered in all data structures!" << endl;
     }
 
+    // Automatically park a vehicle
     void parkVehicle(const Vehicle& vehicle) {
-
         string registration = vehicle.getRegistrationNumber();
-
         string existingType;
+
+        if (registration.empty()) {
+            cout << "Invalid registration number!" << endl;
+            return;
+        }
 
         if (vehicleHash.getVehicleType(registration, existingType)) {
             cout << "Vehicle is already registered!" << endl;
@@ -111,30 +120,30 @@ public:
 
         // Bus needs five consecutive large spaces
         if (vehicle.getType() == "Bus") {
-
             for (auto& floor : floors) {
                 for (auto& row : floor.rows) {
 
                     int availableSpaces = 0;
 
                     for (auto& space : row.spaces) {
-
-                        if (space.type == SpaceType::Large && !space.occupied) {
+                        if (space.type == SpaceType::Large &&
+                            !space.occupied) {
                             availableSpaces++;
                         } else {
                             availableSpaces = 0;
                         }
 
                         if (availableSpaces == 5) {
-
                             int start = space.spaceNumber - 4;
 
                             for (int i = start - 1; i < start + 4; i++) {
                                 row.spaces[i].occupied = true;
-                                row.spaces[i].registrationNumber = registration;
+                                row.spaces[i].registrationNumber =
+                                    registration;
                             }
 
-                            cout << "Bus parked successfully in five consecutive large spaces!" << endl;
+                            cout << "Bus parked successfully in five "
+                                    "consecutive large spaces!" << endl;
 
                             registerVehicle(vehicle);
                             return;
@@ -143,72 +152,127 @@ public:
                 }
             }
 
-            cout << "No five consecutive large spaces available for the bus!" << endl;
+            cout << "No five consecutive large spaces "
+                    "available for the bus!" << endl;
             return;
         }
 
-        // Motorcycle and Car
-        for (auto& floor : floors) {
-            for (auto& row : floor.rows) {
-                for (auto& space : row.spaces) {
+        // Cars and motorcycles
+        if (vehicle.getType() == "Car" ||
+            vehicle.getType() == "Motorcycle") {
 
-                    bool compatible =
-                        vehicle.getType() == "Motorcycle" ||
-                        vehicle.getType() == "Car";
+            for (auto& floor : floors) {
+                for (auto& row : floor.rows) {
+                    for (auto& space : row.spaces) {
 
-                    if (compatible && !space.occupied) {
+                        if (!space.occupied) {
+                            space.occupied = true;
+                            space.registrationNumber = registration;
 
-                        space.occupied = true;
-                        space.registrationNumber = registration;
+                            cout << vehicle.getType()
+                                 << " parked successfully in space "
+                                 << space.spaceNumber << endl;
 
-                        cout << vehicle.getType()
-                             << " parked successfully in space "
-                             << space.spaceNumber << endl;
-
-                        registerVehicle(vehicle);
-                        return;
+                            registerVehicle(vehicle);
+                            return;
+                        }
                     }
                 }
             }
+
+            cout << "No compatible parking space available!" << endl;
+            return;
         }
 
-        cout << "No compatible parking space available!" << endl;
+        cout << "Invalid vehicle type!" << endl;
     }
 
-    bool occupySpace(int floorNumber, int rowNumber,
-                     int spaceNumber, string registration) {
+    // Park a vehicle in a selected space using drag-and-drop
+    bool occupySpace(int floorNumber,
+                     int rowNumber,
+                     int spaceNumber,
+                     const Vehicle& vehicle) {
 
-        if (floorNumber < 1 || floorNumber > floors.size()) {
-            cout << "Invalid floor!" << endl;
+        // Validate floor
+        if (floorNumber < 1 ||
+            floorNumber > static_cast<int>(floors.size())) {
             return false;
         }
 
         ParkingFloor& floor = floors[floorNumber - 1];
 
-        if (rowNumber < 1 || rowNumber > floor.rows.size()) {
-            cout << "Invalid row!" << endl;
+        // Validate row
+        if (rowNumber < 1 ||
+            rowNumber > static_cast<int>(floor.rows.size())) {
             return false;
         }
 
         ParkingRow& row = floor.rows[rowNumber - 1];
 
-        if (spaceNumber < 1 || spaceNumber > row.spaces.size()) {
-            cout << "Invalid parking space!" << endl;
+        // Validate space
+        if (spaceNumber < 1 ||
+            spaceNumber > static_cast<int>(row.spaces.size())) {
+            return false;
+        }
+
+        string registration = vehicle.getRegistrationNumber();
+        string type = vehicle.getType();
+        string existingType;
+
+        // Prevent empty or duplicate registration
+        if (registration.empty() ||
+            vehicleHash.getVehicleType(registration, existingType)) {
             return false;
         }
 
         ParkingSpace& space = row.spaces[spaceNumber - 1];
 
+        // Selected space must be available
         if (space.occupied) {
-            cout << "This space is already occupied!" << endl;
             return false;
         }
 
-        space.occupied = true;
-        space.registrationNumber = registration;
+        // Bus parking
+        if (type == "Bus") {
+            if (space.type != SpaceType::Large) {
+                return false;
+            }
 
-        cout << "Vehicle " << registration
-             << " parked successfully!" << endl;
+            int start = spaceNumber - 1;
+
+            if (start + 5 > static_cast<int>(row.spaces.size())) {
+                return false;
+            }
+
+            // Check all five spaces before parking
+            for (int i = start; i < start + 5; i++) {
+                if (row.spaces[i].type != SpaceType::Large ||
+                    row.spaces[i].occupied) {
+                    return false;
+                }
+            }
+
+            // Occupy five consecutive large spaces
+            for (int i = start; i < start + 5; i++) {
+                row.spaces[i].occupied = true;
+                row.spaces[i].registrationNumber = registration;
+            }
+        }
+        else if (type == "Car" || type == "Motorcycle") {
+            // Cars and motorcycles can use compact or large spaces
+            space.occupied = true;
+            space.registrationNumber = registration;
+        }
+        else {
+            return false;
+        }
+
+        // Register the vehicle in all data structures
+        registerVehicle(vehicle);
+
+        cout << type << " " << registration
+             << " parked successfully using drag-and-drop!"
+             << endl;
 
         return true;
     }
@@ -218,61 +282,71 @@ public:
         return vehicleHash.search(registration);
     }
 
-    // Search using three different algorithms
+    // Compare three search algorithms
     void searchVehicleWithAlgorithms(string registration) {
-
         vector<string> registrations;
 
-        // Collect unique vehicle registrations from occupied spaces
+        // Collect unique registrations
         for (const auto& floor : floors) {
             for (const auto& row : floor.rows) {
                 for (const auto& space : row.spaces) {
-
                     if (space.occupied) {
+                        if (find(
+                                registrations.begin(),
+                                registrations.end(),
+                                space.registrationNumber
+                            ) == registrations.end()) {
 
-                        bool alreadyAdded = false;
-
-                        for (const auto& existing : registrations) {
-                            if (existing == space.registrationNumber) {
-                                alreadyAdded = true;
-                                break;
-                            }
-                        }
-
-                        if (!alreadyAdded) {
-                            registrations.push_back(space.registrationNumber);
+                            registrations.push_back(
+                                space.registrationNumber
+                            );
                         }
                     }
                 }
             }
         }
 
-        cout << "\nLINEAR SEARCH" << endl;
+        cout << "\nSearching for vehicle: "
+             << registration << endl;
 
+        // Linear search
         int linearResult =
-            SearchAlgorithms::linearSearch(registrations, registration);
+            SearchAlgorithms::linearSearch(
+                registrations,
+                registration
+            );
 
-        cout << (linearResult != -1
-            ? "Vehicle found using Linear Search!"
-            : "Vehicle not found using Linear Search!") << endl;
+        cout << "Linear Search: "
+             << (linearResult >= 0 ? "Found" : "Not found")
+             << endl;
 
-        cout << "\nBINARY SEARCH" << endl;
+        // Binary search requires sorted data
+        vector<string> sortedRegistrations = registrations;
+
+        sort(
+            sortedRegistrations.begin(),
+            sortedRegistrations.end()
+        );
 
         int binaryResult =
-            SearchAlgorithms::binarySearch(registrations, registration);
+            SearchAlgorithms::binarySearch(
+                sortedRegistrations,
+                registration
+            );
 
-        cout << (binaryResult != -1
-            ? "Vehicle found using Binary Search!"
-            : "Vehicle not found using Binary Search!") << endl;
+        cout << "Binary Search: "
+             << (binaryResult >= 0 ? "Found" : "Not found")
+             << endl;
 
-        cout << "\nHASH SEARCH" << endl;
-
-        SearchAlgorithms::hashSearch(vehicleHash, registration);
+        // Hash search
+        SearchAlgorithms::hashSearch(
+            vehicleHash,
+            registration
+        );
     }
 
-    // Display vehicles sorted by type using Insertion Sort
+    // Sort vehicle records by type
     void displayVehiclesSortedByType() {
-
         vector<pair<string, string>> vehicles =
             vehicleHash.getAllVehicles();
 
@@ -280,59 +354,58 @@ public:
             vehicles,
             [](const pair<string, string>& first,
                const pair<string, string>& second) {
-
                 return first.second < second.second;
             }
         );
 
-        cout << "\nVEHICLES SORTED BY TYPE" << endl;
+        cout << "\nVehicles sorted by type:" << endl;
 
         for (const auto& vehicle : vehicles) {
-
-            cout << vehicle.second
-                 << " - "
-                 << vehicle.first
+            cout << "Registration: " << vehicle.first
+                 << " | Type: " << vehicle.second
                  << endl;
         }
     }
 
-    // Display all registered vehicles
+    // Display records stored in the data structures
     void displayVehicleRecords() {
-
-        cout << "\nDOUBLY LINKED LIST" << endl;
+        cout << "\n--- Doubly Linked List ---" << endl;
         vehicleList.displayForward();
 
-        cout << "\nBINARY SEARCH TREE" << endl;
+        cout << "\n--- Binary Search Tree ---" << endl;
         vehicleTree.display();
 
-        cout << "\nHASH TABLE" << endl;
+        cout << "\n--- Hash Table ---" << endl;
         vehicleHash.display();
     }
 
-    // Display parking spaces
+    // Display the parking layout
     void displayParking() {
+        cout << "\n===== PARKING LAYOUT =====" << endl;
 
         for (const auto& floor : floors) {
-            cout << "Floor " << floor.floorNumber << endl;
+            cout << "\nFloor " << floor.floorNumber << endl;
 
             for (const auto& row : floor.rows) {
-                cout << "  Row " << row.rowNumber << ": ";
+                cout << "Row " << row.rowNumber << endl;
 
                 for (const auto& space : row.spaces) {
-
-                    cout << (space.type == SpaceType::Compact
-                        ? "[Compact"
-                        : "[Large");
+                    cout << "Space " << space.spaceNumber
+                         << " ("
+                         << (space.type == SpaceType::Compact
+                                 ? "Compact"
+                                 : "Large")
+                         << ") - ";
 
                     if (space.occupied) {
-                        cout << " - Occupied: "
-                             << space.registrationNumber << "] ";
+                        cout << "Occupied by "
+                             << space.registrationNumber;
                     } else {
-                        cout << " - Available] ";
+                        cout << "Available";
                     }
-                }
 
-                cout << endl;
+                    cout << endl;
+                }
             }
         }
     }

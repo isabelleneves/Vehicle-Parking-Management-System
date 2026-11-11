@@ -2,3 +2,13 @@
 *.o
 *.class
 .vscode/
+# Qt generated files
+src/gui/debug/
+src/gui/release/
+src/gui/.qmake.stash
+src/gui/build.log
+src/gui/Makefile
+src/gui/Makefile.Debug
+src/gui/Makefile.Release
+moc_*.cpp
+moc_*.o

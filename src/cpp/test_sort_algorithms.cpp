@@ -1,3 +1,7 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
 #include "SortAlgorithms.h"
 #include "Vehicle.h"
 
@@ -14,8 +18,13 @@ int main() {
     std::vector<std::string> selectionVehicles = vehicles;
     std::vector<std::string> insertionVehicles = vehicles;
 
+    // Bubble Sort
     SortAlgorithms::bubbleSort(bubbleVehicles);
+
+    // Selection Sort
     SortAlgorithms::selectionSort(selectionVehicles);
+
+    // Insertion Sort
     SortAlgorithms::insertionSort(insertionVehicles);
 
     std::cout << "Bubble Sort: ";
@@ -49,7 +58,13 @@ int main() {
     parkingVehicles.push_back(new Vehicle::Motorcycle("ABC123"));
     parkingVehicles.push_back(new Vehicle::Car("DEF456"));
 
-    SortAlgorithms::sortByVehicleType(parkingVehicles);
+    // Sort vehicles alphabetically by type
+    SortAlgorithms::sortByVehicleType(
+        parkingVehicles,
+        [](const Vehicle* a, const Vehicle* b) {
+            return a->getType() < b->getType();
+        }
+    );
 
     std::cout << "Vehicles sorted by type:" << std::endl;
 
@@ -60,6 +75,7 @@ int main() {
                   << std::endl;
     }
 
+    // Free allocated memory
     for (auto vehicle : parkingVehicles) {
         delete vehicle;
     }

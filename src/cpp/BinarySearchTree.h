@@ -55,10 +55,18 @@ private:
 
 public:
     void insert(std::string registration) {
-        root = insertNode(root, registration);
-        std::cout << "Vehicle added to search tree: "
+
+    if (search(registration)) {
+        std::cout << "Vehicle already exists in search tree: "
                   << registration << std::endl;
+        return;
     }
+
+    root = insertNode(root, registration);
+
+    std::cout << "Vehicle added to search tree: "
+              << registration << std::endl;
+}
 
     bool search(std::string registration) {
         return searchNode(root, registration);

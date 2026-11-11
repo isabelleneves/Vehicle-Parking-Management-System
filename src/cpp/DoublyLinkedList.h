@@ -30,20 +30,32 @@ public:
 
     void addVehicle(std::string registration) {
 
-        Node* newNode = new Node(registration);
+    Node* current = head;
 
-        if (head == nullptr) {
-            head = newNode;
-            tail = newNode;
-        } else {
-            tail->next = newNode;
-            newNode->previous = tail;
-            tail = newNode;
+    while (current != nullptr) {
+        if (current->registrationNumber == registration) {
+            std::cout << "Vehicle already exists in linked list: "
+                      << registration << std::endl;
+            return;
         }
 
-        std::cout << "Vehicle added to linked list: "
-                  << registration << std::endl;
+        current = current->next;
     }
+
+    Node* newNode = new Node(registration);
+
+    if (head == nullptr) {
+        head = newNode;
+        tail = newNode;
+    } else {
+        tail->next = newNode;
+        newNode->previous = tail;
+        tail = newNode;
+    }
+
+    std::cout << "Vehicle added to linked list: "
+              << registration << std::endl;
+}
 
     void displayForward() {
 
